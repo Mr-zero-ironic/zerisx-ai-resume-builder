@@ -1,0 +1,5 @@
+{
+  "name": "Zerisx AI Resume Builder",
+  "description": "An AI-powered resume generator with customizable templates and multiple export formats (PDF, DOCX, JPEG).",
+  "requestFramePermissions": []
+}
