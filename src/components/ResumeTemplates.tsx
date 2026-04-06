@@ -1268,20 +1268,638 @@ const VisualTemplate: React.FC<TemplateProps> = ({ data, primaryColor, backgroun
   );
 };
 
-const ModernDarkTemplate: React.FC<TemplateProps> = (props) => {
-  return <ModernTemplate {...props} backgroundColor="#1a1a1a" primaryColor={props.primaryColor === '#1a1a1a' ? '#ef4444' : props.primaryColor} />;
+const ModernDarkTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  const textColor = "#ffffff";
+  const mutedTextColor = "#a1a1aa";
+  const cardBg = "#27272a";
+  const borderColor = "#3f3f46";
+
+  const SectionHeader = ({ title, color = primaryColor, variant = 'default' }: { title: string; color?: string; variant?: 'default' | 'solid' }) => (
+    <div className="mb-8 flex items-center gap-4">
+      <h2 className={cn(
+        "text-xs font-black uppercase tracking-[0.3em]",
+        variant === 'solid' ? "px-4 py-1.5 rounded-lg text-white" : ""
+      )} style={{ color: variant === 'solid' ? 'white' : color, backgroundColor: variant === 'solid' ? color : 'transparent' }}>
+        {title}
+      </h2>
+      <div className="h-px flex-1 opacity-10" style={{ backgroundColor: color }} />
+    </div>
+  );
+
+  return (
+    <div className="p-12 min-h-full" style={{ fontFamily, backgroundColor: '#18181b', color: textColor }}>
+      {/* Header */}
+      <header className="mb-16 flex justify-between items-start">
+        <div className="space-y-4">
+          <h1 className="text-6xl font-black tracking-tighter uppercase italic leading-none">
+            {data.personalInfo.fullName.split(' ')[0]}
+            <br />
+            <span style={{ color: primaryColor }}>{data.personalInfo.fullName.split(' ').slice(1).join(' ')}</span>
+          </h1>
+          <div className="flex flex-wrap gap-6 text-[10px] font-black uppercase tracking-widest" style={{ color: mutedTextColor }}>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
+              {data.personalInfo.email}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
+              {data.personalInfo.phone}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
+              {data.personalInfo.location}
+            </div>
+          </div>
+        </div>
+        {data.personalInfo.photo && (
+          <div className="w-32 h-32 rounded-[2.5rem] overflow-hidden border-4" style={{ borderColor: primaryColor }}>
+            <img src={data.personalInfo.photo} alt={data.personalInfo.fullName} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
+          </div>
+        )}
+      </header>
+
+      <div className="grid grid-cols-12 gap-12">
+        <div className="col-span-8 space-y-12">
+          <section className="p-10 rounded-[48px] border" style={{ backgroundColor: cardBg, borderColor }}>
+            <SectionHeader title="Experience" color={primaryColor} variant="solid" />
+            <div className="space-y-12">
+              {data.experience.map(exp => (
+                <div key={exp.id} className="relative group">
+                  <div className="flex justify-between items-baseline mb-3">
+                    <h3 className="text-2xl font-black uppercase tracking-tight group-hover:translate-x-2 transition-transform duration-300" style={{ color: textColor }}>{exp.position}</h3>
+                    <span className="text-[11px] font-black uppercase tracking-widest opacity-30" style={{ color: textColor }}>{exp.startDate} — {exp.endDate}</span>
+                  </div>
+                  <div className="text-sm font-black uppercase tracking-widest mb-5" style={{ color: primaryColor }}>{exp.company}</div>
+                  <p className="text-sm leading-relaxed whitespace-pre-line p-6 rounded-[32px] border" style={{ color: mutedTextColor, backgroundColor: '#18181b', borderColor }}>{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {data.projects.length > 0 && (
+            <section className="p-10 rounded-[48px] border" style={{ backgroundColor: cardBg, borderColor }}>
+              <SectionHeader title="Projects" color={primaryColor} variant="solid" />
+              <div className="grid grid-cols-2 gap-8">
+                {data.projects.map(proj => (
+                  <div key={proj.id} className="group">
+                    <div className="h-40 rounded-[32px] mb-5 overflow-hidden border group-hover:border-transparent group-hover:shadow-2xl transition-all duration-500 flex items-center justify-center relative" style={{ backgroundColor: '#18181b', borderColor }}>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <span className="text-5xl font-black opacity-10 group-hover:opacity-20 transition-all duration-500 scale-100 group-hover:scale-125" style={{ color: primaryColor }}>{proj.name[0]}</span>
+                    </div>
+                    <h3 className="font-black mb-2 uppercase text-sm tracking-wider" style={{ color: textColor }}>{proj.name}</h3>
+                    <p className="text-xs leading-relaxed line-clamp-3 font-medium" style={{ color: mutedTextColor }}>{proj.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <div className="col-span-4 space-y-10">
+          <section className="p-10 rounded-[48px] shadow-2xl relative overflow-hidden" style={{ backgroundColor: primaryColor }}>
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mb-16" />
+            <SectionHeader title="About" color="white" />
+            <p className="text-sm leading-relaxed text-white/90 font-medium italic relative z-10">
+              {data.personalInfo.summary}
+            </p>
+          </section>
+
+          <section className="p-10 rounded-[48px] border" style={{ backgroundColor: cardBg, borderColor }}>
+            <SectionHeader title="Skills" color={primaryColor} />
+            <div className="flex flex-wrap gap-3">
+              {data.skills.map((skill, i) => (
+                <span key={i} className="px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest border-2 transition-all hover:scale-105" style={{ borderColor: `${primaryColor}40`, color: primaryColor }}>{skill}</span>
+              ))}
+            </div>
+          </section>
+
+          <section className="p-10 rounded-[48px] border" style={{ backgroundColor: cardBg, borderColor }}>
+            <SectionHeader title="Education" color={primaryColor} />
+            <div className="space-y-8">
+              {data.education.map(edu => (
+                <div key={edu.id} className="group">
+                  <div className="font-black text-base uppercase tracking-tight leading-tight group-hover:text-primary transition-colors" style={{ color: textColor }}>{edu.degree}</div>
+                  <div className="text-xs font-black opacity-40 mt-2 uppercase tracking-widest" style={{ color: textColor }}>{edu.school}</div>
+                  <div className="text-[10px] font-bold opacity-20 mt-1.5" style={{ color: textColor }}>{edu.startDate} - {edu.endDate}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const InfographicTemplate: React.FC<TemplateProps> = (props) => {
-  return <VisualTemplate {...props} />;
+const InfographicTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  const SectionHeader = ({ title, color = primaryColor }: { title: string; color?: string }) => (
+    <div className="mb-8">
+      <h2 className="text-2xl font-black uppercase tracking-tighter mb-2" style={{ color }}>{title}</h2>
+      <div className="h-2 w-24 rounded-full" style={{ backgroundColor: color }} />
+    </div>
+  );
+
+  return (
+    <div className="min-h-full bg-white flex flex-col" style={{ fontFamily }}>
+      <header className="p-16 flex items-center gap-12 border-b-8" style={{ borderColor: primaryColor }}>
+        {data.personalInfo.photo && (
+          <div className="w-40 h-40 rounded-[3rem] overflow-hidden shadow-2xl rotate-3">
+            <img src={data.personalInfo.photo} alt={data.personalInfo.fullName} className="w-full h-full object-cover" />
+          </div>
+        )}
+        <div className="flex-1">
+          <h1 className="text-7xl font-black uppercase tracking-tighter leading-none mb-6 italic">{data.personalInfo.fullName}</h1>
+          <div className="flex flex-wrap gap-4">
+            <span className="px-4 py-2 bg-gray-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest">{data.personalInfo.location}</span>
+            <span className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-[10px] font-black uppercase tracking-widest">{data.personalInfo.email}</span>
+            <span className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl text-[10px] font-black uppercase tracking-widest">{data.personalInfo.phone}</span>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex-1 grid grid-cols-12">
+        <div className="col-span-4 p-12 space-y-12 bg-gray-50/50">
+          <section>
+            <SectionHeader title="Skills" />
+            <div className="space-y-4">
+              {data.skills.map((skill, i) => (
+                <div key={i} className="space-y-1.5">
+                  <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-gray-600">
+                    <span>{skill}</span>
+                    <span>{90 - (i * 5)}%</span>
+                  </div>
+                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" style={{ backgroundColor: primaryColor, width: `${90 - (i * 5)}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <SectionHeader title="Education" />
+            <div className="space-y-8">
+              {data.education.map(edu => (
+                <div key={edu.id} className="relative pl-6 border-l-2" style={{ borderColor: primaryColor }}>
+                  <div className="absolute left-[-5px] top-0 w-2 h-2 rounded-full" style={{ backgroundColor: primaryColor }} />
+                  <div className="text-sm font-black uppercase tracking-tight text-gray-900">{edu.degree}</div>
+                  <div className="text-[10px] font-bold text-gray-400 mt-1">{edu.school}</div>
+                  <div className="text-[9px] font-black uppercase tracking-widest text-gray-300 mt-1">{edu.startDate} - {edu.endDate}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="col-span-8 p-16 space-y-16">
+          <section>
+            <SectionHeader title="Summary" />
+            <p className="text-xl font-black leading-tight text-gray-900 tracking-tight">
+              {data.personalInfo.summary}
+            </p>
+          </section>
+
+          <section>
+            <SectionHeader title="Experience" />
+            <div className="space-y-12">
+              {data.experience.map(exp => (
+                <div key={exp.id} className="group">
+                  <div className="flex justify-between items-baseline mb-4">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter text-gray-900 group-hover:text-primary transition-colors" style={{ color: primaryColor }}>{exp.position}</h3>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">{exp.startDate} — {exp.endDate}</span>
+                  </div>
+                  <div className="text-sm font-black uppercase tracking-widest mb-6 text-gray-400">{exp.company}</div>
+                  <div className="bg-gray-50 p-8 rounded-[2.5rem] border border-gray-100 group-hover:bg-white group-hover:shadow-xl transition-all">
+                    <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-line font-medium">{exp.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {data.projects.length > 0 && (
+            <section>
+              <SectionHeader title="Projects" />
+              <div className="grid grid-cols-2 gap-8">
+                {data.projects.map(proj => (
+                  <div key={proj.id} className="p-8 rounded-[3rem] border-4 border-dashed border-gray-100 hover:border-solid hover:border-primary transition-all group" style={{ borderColor: `${primaryColor}20` }}>
+                    <h3 className="font-black text-gray-900 mb-3 uppercase text-sm tracking-tight group-hover:text-primary" style={{ color: primaryColor }}>{proj.name}</h3>
+                    <p className="text-xs leading-relaxed text-gray-500 font-medium">{proj.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const ExecutiveTemplate: React.FC<TemplateProps> = (props) => {
-  return <ProfessionalTemplate {...props} />;
+const ExecutiveTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  const SectionHeader = ({ title, color = primaryColor }: { title: string; color?: string }) => (
+    <div className="mb-6">
+      <h2 className="text-xs font-black uppercase tracking-[0.4em] mb-2" style={{ color }}>{title}</h2>
+      <div className="h-1 w-12" style={{ backgroundColor: color }} />
+    </div>
+  );
+
+  return (
+    <div className="min-h-full flex flex-col" style={{ fontFamily, backgroundColor: '#ffffff', color: '#1a1a1a' }}>
+      <header className="bg-gray-900 text-white p-16 flex justify-between items-center relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
+        <div className="relative z-10">
+          <h1 className="text-5xl font-black uppercase tracking-tighter mb-4 leading-none">{data.personalInfo.fullName}</h1>
+          <div className="flex gap-6 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">
+            <span>{data.personalInfo.location}</span>
+            <span>{data.personalInfo.phone}</span>
+            <span>{data.personalInfo.email}</span>
+          </div>
+        </div>
+        {data.personalInfo.photo && (
+          <div className="w-32 h-32 rounded-full border-4 overflow-hidden relative z-10" style={{ borderColor: primaryColor }}>
+            <img src={data.personalInfo.photo} alt={data.personalInfo.fullName} className="w-full h-full object-cover" />
+          </div>
+        )}
+      </header>
+
+      <div className="flex-1 grid grid-cols-12">
+        <div className="col-span-4 bg-gray-50 p-12 space-y-12 border-r border-gray-100">
+          <section>
+            <SectionHeader title="Contact" />
+            <div className="space-y-4 text-xs font-medium text-gray-600">
+              <div className="flex flex-col gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Email</span>
+                {data.personalInfo.email}
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Phone</span>
+                {data.personalInfo.phone}
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Location</span>
+                {data.personalInfo.location}
+              </div>
+              {data.personalInfo.website && (
+                <div className="flex flex-col gap-1">
+                  <span className="text-[9px] font-black uppercase tracking-widest opacity-40">Website</span>
+                  {data.personalInfo.website}
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section>
+            <SectionHeader title="Expertise" />
+            <div className="flex flex-col gap-3">
+              {data.skills.map((skill, i) => (
+                <div key={i} className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-gray-700">
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: primaryColor }} />
+                  {skill}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <SectionHeader title="Education" />
+            <div className="space-y-6">
+              {data.education.map(edu => (
+                <div key={edu.id}>
+                  <div className="text-xs font-black uppercase tracking-tight text-gray-900">{edu.degree}</div>
+                  <div className="text-[10px] font-bold text-gray-400 mt-1">{edu.school}</div>
+                  <div className="text-[9px] font-black uppercase tracking-widest text-gray-300 mt-1">{edu.startDate} - {edu.endDate}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="col-span-8 p-16 space-y-16">
+          <section>
+            <SectionHeader title="Executive Profile" />
+            <p className="text-sm leading-relaxed text-gray-700 font-medium italic border-l-4 pl-8" style={{ borderColor: primaryColor }}>
+              {data.personalInfo.summary}
+            </p>
+          </section>
+
+          <section>
+            <SectionHeader title="Professional Experience" />
+            <div className="space-y-12">
+              {data.experience.map(exp => (
+                <div key={exp.id} className="relative">
+                  <div className="flex justify-between items-baseline mb-2">
+                    <h3 className="text-xl font-black uppercase tracking-tight text-gray-900">{exp.position}</h3>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-300">{exp.startDate} — {exp.endDate}</span>
+                  </div>
+                  <div className="text-xs font-black uppercase tracking-widest mb-4" style={{ color: primaryColor }}>{exp.company}</div>
+                  <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-line font-medium">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {data.projects.length > 0 && (
+            <section>
+              <SectionHeader title="Key Projects" />
+              <div className="grid grid-cols-2 gap-8">
+                {data.projects.map(proj => (
+                  <div key={proj.id} className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                    <h3 className="font-black text-gray-900 mb-2 uppercase text-xs tracking-wider">{proj.name}</h3>
+                    <p className="text-[11px] leading-relaxed text-gray-500 font-medium">{proj.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 };
 
-const AcademicTemplate: React.FC<TemplateProps> = (props) => {
-  return <ClassicTemplate {...props} />;
+const AcademicTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  const SectionHeader = ({ title }: { title: string }) => (
+    <div className="mb-6 border-b-2 border-gray-900 pb-2">
+      <h2 className="text-lg font-black uppercase tracking-widest text-gray-900">{title}</h2>
+    </div>
+  );
+
+  return (
+    <div className="p-16 min-h-full bg-white text-gray-900" style={{ fontFamily }}>
+      <header className="text-center mb-16 space-y-4">
+        <h1 className="text-4xl font-black uppercase tracking-tighter">{data.personalInfo.fullName}</h1>
+        <div className="flex justify-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
+          <span>{data.personalInfo.location}</span>
+          <span>•</span>
+          <span>{data.personalInfo.phone}</span>
+          <span>•</span>
+          <span>{data.personalInfo.email}</span>
+        </div>
+        {data.personalInfo.website && (
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+            {data.personalInfo.website}
+          </div>
+        )}
+      </header>
+
+      <div className="space-y-12">
+        <section>
+          <SectionHeader title="Research Summary" />
+          <p className="text-sm leading-relaxed text-gray-700 font-medium text-justify">
+            {data.personalInfo.summary}
+          </p>
+        </section>
+
+        <section>
+          <SectionHeader title="Professional Experience" />
+          <div className="space-y-10">
+            {data.experience.map(exp => (
+              <div key={exp.id}>
+                <div className="flex justify-between items-baseline mb-2">
+                  <h3 className="text-base font-black uppercase text-gray-900">{exp.position}</h3>
+                  <span className="text-xs font-bold text-gray-400">{exp.startDate} — {exp.endDate}</span>
+                </div>
+                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: primaryColor }}>{exp.company}</div>
+                <p className="text-sm leading-relaxed text-gray-600 whitespace-pre-line text-justify">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <SectionHeader title="Education" />
+          <div className="space-y-8">
+            {data.education.map(edu => (
+              <div key={edu.id}>
+                <div className="flex justify-between items-baseline mb-1">
+                  <div className="text-base font-black uppercase text-gray-900">{edu.degree}</div>
+                  <span className="text-xs font-bold text-gray-400">{edu.startDate} — {edu.endDate}</span>
+                </div>
+                <div className="text-xs font-black uppercase tracking-widest opacity-60">{edu.school}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {data.projects.length > 0 && (
+          <section>
+            <SectionHeader title="Publications & Projects" />
+            <div className="space-y-8">
+              {data.projects.map(proj => (
+                <div key={proj.id}>
+                  <div className="flex justify-between items-baseline mb-2">
+                    <h3 className="text-base font-black uppercase text-gray-900">{proj.name}</h3>
+                    {proj.link && <span className="text-xs font-bold text-gray-400">{proj.link}</span>}
+                  </div>
+                  <p className="text-sm leading-relaxed text-gray-600 text-justify">{proj.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section>
+          <SectionHeader title="Technical Skills" />
+          <div className="text-sm leading-relaxed text-gray-700 font-medium">
+            <span className="font-black uppercase text-xs tracking-widest mr-4">Core Competencies:</span>
+            {data.skills.join(' • ')}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+};
+
+const MinimalistProTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  return (
+    <div className="p-20 min-h-full bg-white text-gray-900 flex flex-col items-center" style={{ fontFamily }}>
+      <header className="text-center mb-20 space-y-6 max-w-2xl">
+        <h1 className="text-5xl font-light tracking-[0.2em] uppercase">{data.personalInfo.fullName}</h1>
+        <div className="h-px w-20 bg-black mx-auto" />
+        <div className="flex justify-center gap-8 text-[10px] font-bold uppercase tracking-[0.3em] text-gray-400">
+          <span>{data.personalInfo.location}</span>
+          <span>{data.personalInfo.email}</span>
+          <span>{data.personalInfo.phone}</span>
+        </div>
+      </header>
+
+      <div className="w-full max-w-3xl space-y-20">
+        <section className="text-center">
+          <p className="text-lg font-light leading-relaxed text-gray-600 italic">
+            {data.personalInfo.summary}
+          </p>
+        </section>
+
+        <section className="space-y-12">
+          <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-center text-gray-300 mb-12">Experience</h2>
+          <div className="space-y-16">
+            {data.experience.map(exp => (
+              <div key={exp.id} className="text-center space-y-4">
+                <div className="space-y-1">
+                  <h3 className="text-xl font-medium text-gray-900">{exp.position}</h3>
+                  <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">{exp.company} / {exp.startDate} — {exp.endDate}</div>
+                </div>
+                <p className="text-sm leading-relaxed text-gray-500 max-w-xl mx-auto">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="grid grid-cols-2 gap-20">
+          <section className="space-y-8">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-300">Education</h2>
+            <div className="space-y-6">
+              {data.education.map(edu => (
+                <div key={edu.id} className="space-y-1">
+                  <div className="text-sm font-medium text-gray-900">{edu.degree}</div>
+                  <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{edu.school}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="space-y-8">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-gray-300">Expertise</h2>
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
+              {data.skills.map((skill, i) => (
+                <span key={i} className="text-[10px] font-black uppercase tracking-widest text-gray-600">{skill}</span>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CreativeVibrantTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  return (
+    <div className="min-h-full bg-rose-50/30 flex flex-col" style={{ fontFamily }}>
+      <header className="bg-rose-500 text-white p-20 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-32 -mb-32 blur-2xl" />
+        
+        <div className="relative z-10 flex justify-between items-end">
+          <div className="space-y-6">
+            <h1 className="text-8xl font-black tracking-tighter leading-none uppercase italic">{data.personalInfo.fullName}</h1>
+            <div className="flex gap-4">
+              <span className="px-4 py-2 bg-white text-rose-500 rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">{data.personalInfo.location}</span>
+              <span className="px-4 py-2 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">{data.personalInfo.email}</span>
+            </div>
+          </div>
+          {data.personalInfo.photo && (
+            <div className="w-48 h-48 rounded-[4rem] overflow-hidden border-8 border-white shadow-2xl rotate-6">
+              <img src={data.personalInfo.photo} alt={data.personalInfo.fullName} className="w-full h-full object-cover" />
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="flex-1 grid grid-cols-12 gap-12 p-12">
+        <div className="col-span-8 space-y-12">
+          <section className="bg-white p-12 rounded-[4rem] shadow-xl border border-rose-100">
+            <h2 className="text-4xl font-black uppercase tracking-tighter mb-8 text-rose-500 italic">Experience</h2>
+            <div className="space-y-12">
+              {data.experience.map(exp => (
+                <div key={exp.id} className="group">
+                  <div className="flex justify-between items-baseline mb-4">
+                    <h3 className="text-2xl font-black uppercase text-gray-900 group-hover:text-rose-500 transition-colors">{exp.position}</h3>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-rose-200">{exp.startDate} — {exp.endDate}</span>
+                  </div>
+                  <div className="text-sm font-black uppercase tracking-widest mb-4 text-gray-400">{exp.company}</div>
+                  <p className="text-sm leading-relaxed text-gray-600 font-medium">{exp.description}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="col-span-4 space-y-12">
+          <section className="bg-black text-white p-12 rounded-[4rem] shadow-2xl">
+            <h2 className="text-2xl font-black uppercase tracking-tighter mb-6 italic">About</h2>
+            <p className="text-sm leading-relaxed text-rose-100/80 font-medium">
+              {data.personalInfo.summary}
+            </p>
+          </section>
+
+          <section className="bg-white p-12 rounded-[4rem] shadow-xl border border-rose-100">
+            <h2 className="text-2xl font-black uppercase tracking-tighter mb-6 text-rose-500 italic">Skills</h2>
+            <div className="flex flex-wrap gap-3">
+              {data.skills.map((skill, i) => (
+                <span key={i} className="px-4 py-2 bg-rose-50 text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-rose-100">{skill}</span>
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LegalStandardTemplate: React.FC<TemplateProps> = ({ data, primaryColor, fontFamily }) => {
+  return (
+    <div className="p-20 min-h-full bg-white text-gray-900 border-[12px] border-double border-gray-100" style={{ fontFamily: 'serif' }}>
+      <header className="text-center mb-16 border-b-2 border-gray-900 pb-8">
+        <h1 className="text-3xl font-bold uppercase tracking-widest mb-4">{data.personalInfo.fullName}</h1>
+        <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-600 space-x-4">
+          <span>{data.personalInfo.location}</span>
+          <span>|</span>
+          <span>{data.personalInfo.email}</span>
+          <span>|</span>
+          <span>{data.personalInfo.phone}</span>
+        </div>
+      </header>
+
+      <div className="space-y-12">
+        <section>
+          <h2 className="text-xs font-bold uppercase tracking-widest border-b border-gray-200 pb-1 mb-4">Professional Summary</h2>
+          <p className="text-sm leading-relaxed text-gray-800 text-justify">
+            {data.personalInfo.summary}
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xs font-bold uppercase tracking-widest border-b border-gray-200 pb-1 mb-6">Experience</h2>
+          <div className="space-y-8">
+            {data.experience.map(exp => (
+              <div key={exp.id}>
+                <div className="flex justify-between font-bold text-sm mb-1">
+                  <span>{exp.company}</span>
+                  <span>{exp.startDate} — {exp.endDate}</span>
+                </div>
+                <div className="italic text-sm mb-3">{exp.position}</div>
+                <p className="text-sm leading-relaxed text-gray-700 text-justify whitespace-pre-line">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xs font-bold uppercase tracking-widest border-b border-gray-200 pb-1 mb-6">Education</h2>
+          <div className="space-y-6">
+            {data.education.map(edu => (
+              <div key={edu.id}>
+                <div className="flex justify-between font-bold text-sm mb-1">
+                  <span>{edu.school}</span>
+                  <span>{edu.startDate} — {edu.endDate}</span>
+                </div>
+                <div className="text-sm">{edu.degree}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-xs font-bold uppercase tracking-widest border-b border-gray-200 pb-1 mb-4">Additional Information</h2>
+          <div className="text-sm">
+            <span className="font-bold">Skills & Expertise: </span>
+            {data.skills.join(', ')}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 };
 
 export const ResumeTemplates: Record<TemplateId, React.FC<TemplateProps>> = {
@@ -1300,6 +1918,9 @@ export const ResumeTemplates: Record<TemplateId, React.FC<TemplateProps>> = {
   modern_dark: ModernDarkTemplate,
   infographic: InfographicTemplate,
   executive: ExecutiveTemplate,
-  academic: AcademicTemplate
+  academic: AcademicTemplate,
+  minimalist_pro: MinimalistProTemplate,
+  creative_vibrant: CreativeVibrantTemplate,
+  legal_standard: LegalStandardTemplate,
 };
 

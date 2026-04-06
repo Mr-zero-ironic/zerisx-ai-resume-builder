@@ -39,7 +39,7 @@ export interface Project {
   link: string;
 }
 
-export type TemplateId = 'modern' | 'classic' | 'minimal' | 'creative' | 'professional' | 'elegant' | 'bold' | 'compact' | 'sidebar' | 'tech' | 'canva' | 'visual' | 'modern_dark' | 'infographic' | 'executive' | 'academic';
+export type TemplateId = 'modern' | 'classic' | 'minimal' | 'creative' | 'professional' | 'elegant' | 'bold' | 'compact' | 'sidebar' | 'tech' | 'canva' | 'visual' | 'modern_dark' | 'infographic' | 'executive' | 'academic' | 'minimalist_pro' | 'creative_vibrant' | 'legal_standard';
 
 export interface ResumeSettings {
   templateId: TemplateId;

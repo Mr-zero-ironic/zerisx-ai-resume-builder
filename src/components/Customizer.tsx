@@ -26,6 +26,9 @@ const templates: { id: TemplateId; label: string; description: string; color: st
   { id: 'infographic', label: 'Infographic', description: 'Visual-heavy storytelling', color: '#f97316', recommendedFor: 'Marketing & PR' },
   { id: 'executive', label: 'Executive', description: 'High-level corporate focus', color: '#1e3a8a', recommendedFor: 'C-Suite & Directors' },
   { id: 'academic', label: 'Academic', description: 'Multi-page academic focus', color: '#4b5563', recommendedFor: 'Researchers & PhDs' },
+  { id: 'minimalist_pro', label: 'Minimalist Pro', description: 'Ultra-clean high-end design', color: '#000000', recommendedFor: 'Senior Designers' },
+  { id: 'creative_vibrant', label: 'Creative Vibrant', description: 'High-energy artistic style', color: '#f43f5e', recommendedFor: 'Artists & Creators' },
+  { id: 'legal_standard', label: 'Legal Standard', description: 'Strict formal legal layout', color: '#0f172a', recommendedFor: 'Lawyers & Legal' },
 ];
 
 const TemplatePreview: React.FC<{ id: TemplateId; active: boolean }> = ({ id, active }) => {
@@ -164,6 +167,26 @@ const TemplatePreview: React.FC<{ id: TemplateId; active: boolean }> = ({ id, ac
         <div className="flex-1 border border-gray-100 rounded-sm p-1">
           <div className="h-full bg-gray-50 rounded-sm" />
         </div>
+      </div>
+    ),
+    minimalist_pro: (
+      <div className="w-full h-full flex flex-col gap-2 p-2 bg-white items-center justify-center">
+        <div className="w-1/2 h-1 bg-black" />
+        <div className="w-full h-0.5 bg-gray-100" />
+        <div className="w-full h-0.5 bg-gray-100" />
+      </div>
+    ),
+    creative_vibrant: (
+      <div className="w-full h-full flex flex-col bg-rose-50 p-1 gap-1">
+        <div className="h-1/3 bg-rose-500 rounded-sm" />
+        <div className="flex-1 bg-white rounded-sm" />
+      </div>
+    ),
+    legal_standard: (
+      <div className="w-full h-full flex flex-col gap-1 p-2 bg-white border border-gray-200">
+        <div className="h-1 bg-gray-900 w-1/3 mx-auto" />
+        <div className="h-0.5 bg-gray-200 w-full" />
+        <div className="h-0.5 bg-gray-200 w-full" />
       </div>
     ),
   };

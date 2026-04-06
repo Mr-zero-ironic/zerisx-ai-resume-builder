@@ -125,7 +125,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#F8F9FB] flex flex-col font-sans selection:bg-red-100 selection:text-red-900">
       {/* SaaS Header */}
-      <header className="fixed top-0 left-0 right-0 z-[100] w-full border-b backdrop-blur-xl bg-white/80 border-gray-200/50">
+      <header className="fixed top-0 left-0 right-0 z-[100] w-full border-b backdrop-blur-xl bg-white/90 border-gray-200/50">
         <div className="max-w-[1800px] mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-4">
@@ -204,16 +204,69 @@ export default function App() {
               
               <button 
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-3 bg-white border border-gray-200 rounded-xl text-gray-600"
+                className="lg:hidden p-3 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t bg-white overflow-hidden"
+            >
+              <div className="p-6 space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <button 
+                    onClick={() => { setActiveTab('content'); setIsMobileMenuOpen(false); }}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all",
+                      activeTab === 'content' ? "bg-red-50 border-red-200 text-red-600" : "bg-gray-50 border-gray-100 text-gray-400"
+                    )}
+                  >
+                    <FileText size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Content</span>
+                  </button>
+                  <button 
+                    onClick={() => { setActiveTab('style'); setIsMobileMenuOpen(false); }}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all",
+                      activeTab === 'style' ? "bg-red-50 border-red-200 text-red-600" : "bg-gray-50 border-gray-100 text-gray-400"
+                    )}
+                  >
+                    <Palette size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Design</span>
+                  </button>
+                </div>
+                
+                <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Resume Strength</span>
+                    <span className="text-xs font-black text-gray-900">{resumeStrength}%</span>
+                  </div>
+                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div 
+                      className={cn(
+                        "h-full transition-all duration-500",
+                        resumeStrength < 40 ? "bg-red-500" : resumeStrength < 70 ? "bg-orange-500" : "bg-green-500"
+                      )}
+                      style={{ width: `${resumeStrength}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
-      <main className="flex-1 max-w-[1800px] mx-auto w-full p-6 md:p-12 pt-32">
+      <main className="flex-1 max-w-[1800px] mx-auto w-full p-6 md:p-12 pt-32 lg:pt-40">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* Left Column: Editor */}
           <div className="lg:col-span-5 space-y-8">
@@ -299,7 +352,7 @@ export default function App() {
 
           {/* Right Column: Preview */}
           <div className={cn(
-            "lg:col-span-7 sticky top-32",
+            "lg:col-span-7 sticky top-32 lg:top-40",
             activeTab !== 'preview' && "hidden lg:block"
           )}>
             <div className="relative group">

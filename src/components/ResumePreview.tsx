@@ -287,7 +287,7 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, settings }) 
   return (
     <div className="flex flex-col items-center gap-6 w-full h-full">
       {/* Floating Controls Bar - Refined Aesthetic */}
-      <div className="w-full no-print flex items-center justify-between bg-white/80 backdrop-blur-xl p-4 rounded-[2.5rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] border border-white/20 sticky top-0 z-50">
+      <div className="w-full no-print flex items-center justify-between bg-white/80 backdrop-blur-xl p-4 rounded-[2.5rem] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] border border-white/20 sticky top-20 z-50">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 bg-gray-100/50 rounded-2xl p-1">
             <button 
