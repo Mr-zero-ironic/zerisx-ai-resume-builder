@@ -5,7 +5,7 @@ import { Download, FileText, Image as ImageIcon, File as FileIcon, Loader2, X, M
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { saveAs } from 'file-saver';
-import { Document, Packer, Paragraph, TextRun } from 'docx';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from 'docx';
 import { cn } from '../lib/utils';
 
 interface ResumePreviewProps {
@@ -184,46 +184,218 @@ export const ResumePreview: React.FC<ResumePreviewProps> = ({ data, settings }) 
     try {
       const doc = new Document({
         sections: [{
-          properties: {},
+          properties: {
+            page: {
+              margin: {
+                top: 720, // 0.5 inch
+                right: 720,
+                bottom: 720,
+                left: 720,
+              },
+            },
+          },
           children: [
+            // Header
             new Paragraph({
+              alignment: AlignmentType.CENTER,
               children: [
-                new TextRun({ text: data.personalInfo.fullName, bold: true, size: 32 }),
+                new TextRun({
+                  text: data.personalInfo.fullName,
+                  bold: true,
+                  size: 48,
+                  font: settings.fontFamily,
+                }),
               ],
             }),
-            new Paragraph({ text: `${data.personalInfo.email} | ${data.personalInfo.phone} | ${data.personalInfo.location}${data.personalInfo.linkedin ? ` | ${data.personalInfo.linkedin}` : ''}` }),
-            new Paragraph({ text: "" }),
-            new Paragraph({ children: [new TextRun({ text: "Summary", bold: true, size: 24 })] }),
-            new Paragraph({ text: data.personalInfo.summary }),
-            new Paragraph({ text: "" }),
-            new Paragraph({ children: [new TextRun({ text: "Experience", bold: true, size: 24 })] }),
+            new Paragraph({
+              alignment: AlignmentType.CENTER,
+              spacing: { before: 100, after: 200 },
+              children: [
+                new TextRun({
+                  text: `${data.personalInfo.email} | ${data.personalInfo.phone} | ${data.personalInfo.location}`,
+                  size: 20,
+                  font: settings.fontFamily,
+                }),
+                ...(data.personalInfo.linkedin ? [
+                  new TextRun({
+                    text: ` | LinkedIn: ${data.personalInfo.linkedin}`,
+                    size: 20,
+                    font: settings.fontFamily,
+                  })
+                ] : []),
+              ],
+            }),
+
+            // Summary
+            new Paragraph({
+              heading: HeadingLevel.HEADING_1,
+              border: {
+                bottom: { color: settings.primaryColor.replace('#', ''), space: 1, style: BorderStyle.SINGLE, size: 6 },
+              },
+              children: [
+                new TextRun({
+                  text: "PROFESSIONAL SUMMARY",
+                  bold: true,
+                  size: 24,
+                  color: settings.primaryColor.replace('#', ''),
+                  font: settings.fontFamily,
+                }),
+              ],
+            }),
+            new Paragraph({
+              spacing: { before: 200, after: 400 },
+              children: [
+                new TextRun({
+                  text: data.personalInfo.summary,
+                  size: 22,
+                  font: settings.fontFamily,
+                }),
+              ],
+            }),
+
+            // Experience
+            new Paragraph({
+              heading: HeadingLevel.HEADING_1,
+              border: {
+                bottom: { color: settings.primaryColor.replace('#', ''), space: 1, style: BorderStyle.SINGLE, size: 6 },
+              },
+              children: [
+                new TextRun({
+                  text: "EXPERIENCE",
+                  bold: true,
+                  size: 24,
+                  color: settings.primaryColor.replace('#', ''),
+                  font: settings.fontFamily,
+                }),
+              ],
+            }),
             ...data.experience.flatMap(exp => [
-              new Paragraph({ children: [new TextRun({ text: `${exp.position} at ${exp.company}`, bold: true })] }),
-              new Paragraph({ text: `${exp.startDate} - ${exp.endDate}` }),
-              new Paragraph({ text: exp.description }),
-              new Paragraph({ text: "" }),
+              new Paragraph({
+                spacing: { before: 200 },
+                children: [
+                  new TextRun({ text: exp.position, bold: true, size: 24, font: settings.fontFamily }),
+                  new TextRun({ text: `\t${exp.startDate} - ${exp.endDate}`, bold: true, size: 20, font: settings.fontFamily }),
+                ],
+                tabStops: [{ type: 'right', position: 9350 }], // Right align date
+              }),
+              new Paragraph({
+                children: [
+                  new TextRun({ text: exp.company, italics: true, size: 22, color: "666666", font: settings.fontFamily }),
+                ],
+              }),
+              new Paragraph({
+                spacing: { before: 100, after: 200 },
+                children: [
+                  new TextRun({ text: exp.description, size: 22, font: settings.fontFamily }),
+                ],
+              }),
             ]),
+
+            // Projects
             ...(data.projects.length > 0 ? [
-              new Paragraph({ children: [new TextRun({ text: "Projects", bold: true, size: 24 })] }),
+              new Paragraph({
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 200 },
+                border: {
+                  bottom: { color: settings.primaryColor.replace('#', ''), space: 1, style: BorderStyle.SINGLE, size: 6 },
+                },
+                children: [
+                  new TextRun({
+                    text: "PROJECTS",
+                    bold: true,
+                    size: 24,
+                    color: settings.primaryColor.replace('#', ''),
+                    font: settings.fontFamily,
+                  }),
+                ],
+              }),
               ...data.projects.flatMap(proj => [
-                new Paragraph({ children: [new TextRun({ text: proj.name, bold: true })] }),
-                new Paragraph({ text: proj.link || "" }),
-                new Paragraph({ text: proj.description }),
-                new Paragraph({ text: "" }),
+                new Paragraph({
+                  spacing: { before: 200 },
+                  children: [
+                    new TextRun({ text: proj.name, bold: true, size: 24, font: settings.fontFamily }),
+                  ],
+                }),
+                ...(proj.link ? [
+                  new Paragraph({
+                    children: [
+                      new TextRun({ text: proj.link, size: 18, color: "0000FF", font: settings.fontFamily }),
+                    ],
+                  })
+                ] : []),
+                new Paragraph({
+                  spacing: { before: 100, after: 200 },
+                  children: [
+                    new TextRun({ text: proj.description, size: 22, font: settings.fontFamily }),
+                  ],
+                }),
               ])
             ] : []),
+
+            // Education
             ...(data.education.length > 0 ? [
-              new Paragraph({ children: [new TextRun({ text: "Education", bold: true, size: 24 })] }),
+              new Paragraph({
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 200 },
+                border: {
+                  bottom: { color: settings.primaryColor.replace('#', ''), space: 1, style: BorderStyle.SINGLE, size: 6 },
+                },
+                children: [
+                  new TextRun({
+                    text: "EDUCATION",
+                    bold: true,
+                    size: 24,
+                    color: settings.primaryColor.replace('#', ''),
+                    font: settings.fontFamily,
+                  }),
+                ],
+              }),
               ...data.education.flatMap(edu => [
-                new Paragraph({ children: [new TextRun({ text: edu.school, bold: true })] }),
-                new Paragraph({ text: `${edu.degree} (${edu.startDate} - ${edu.endDate})` }),
-                new Paragraph({ text: "" }),
+                new Paragraph({
+                  spacing: { before: 200 },
+                  children: [
+                    new TextRun({ text: edu.school, bold: true, size: 24, font: settings.fontFamily }),
+                    new TextRun({ text: `\t${edu.startDate} - ${edu.endDate}`, bold: true, size: 20, font: settings.fontFamily }),
+                  ],
+                  tabStops: [{ type: 'right', position: 9350 }],
+                }),
+                new Paragraph({
+                  spacing: { after: 200 },
+                  children: [
+                    new TextRun({ text: edu.degree, italics: true, size: 22, font: settings.fontFamily }),
+                  ],
+                }),
               ])
             ] : []),
+
+            // Skills
             ...(data.skills.length > 0 ? [
-              new Paragraph({ children: [new TextRun({ text: "Skills", bold: true, size: 24 })] }),
-              new Paragraph({ text: data.skills.join(", ") }),
-              new Paragraph({ text: "" }),
+              new Paragraph({
+                heading: HeadingLevel.HEADING_1,
+                spacing: { before: 200 },
+                border: {
+                  bottom: { color: settings.primaryColor.replace('#', ''), space: 1, style: BorderStyle.SINGLE, size: 6 },
+                },
+                children: [
+                  new TextRun({
+                    text: "SKILLS & EXPERTISE",
+                    bold: true,
+                    size: 24,
+                    color: settings.primaryColor.replace('#', ''),
+                    font: settings.fontFamily,
+                  }),
+                ],
+              }),
+              new Paragraph({
+                spacing: { before: 200, after: 400 },
+                children: [
+                  new TextRun({
+                    text: data.skills.join(" • "),
+                    size: 22,
+                    font: settings.fontFamily,
+                  }),
+                ],
+              }),
             ] : []),
           ],
         }],
